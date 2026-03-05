@@ -66,5 +66,4 @@ Tasks communicate through FreeRTOS message queues, ensuring:
 | UART TX | PA9 | Serial Output (9600 baud) |
 | UART RX | PA10 | Serial Input |
 
-## 📦 Project Structure
 
