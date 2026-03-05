@@ -36,3 +36,35 @@ This project demonstrates advanced embedded systems concepts including real-time
 - Outputs current state via UART for real-time monitoring
 - Provides debugging information and system status
 - Non-blocking UART communication
+
+### IPC
+Tasks communicate through FreeRTOS message queues, ensuring:
+- Thread-safe data passing
+- No race conditions
+- Deterministic scheduling
+- Easy debugging and testing
+
+## 🛠️ Hardware & Tools
+
+### Microcontroller
+- **MCU**: STM32F103C6 (ARM Cortex-M3)
+- **Memory**: 32KB Flash, 10KB SRAM
+- **Peripherals**: GPIO, UART, SysTick Timer
+
+### Development Tools
+- **IDE**: STM32CubeIDE
+- **HAL Library**: STM32F1 HAL
+- **RTOS**: FreeRTOS
+- **Simulator**: Proteus 8 Professional
+
+### GPIO Configuration
+| Component | GPIO Pin | Function |
+|-----------|----------|----------|
+| Red LED | PA0 | Digital Output |
+| Yellow LED | PA1 | Digital Output |
+| Green LED | PA2 | Digital Output |
+| UART TX | PA9 | Serial Output (9600 baud) |
+| UART RX | PA10 | Serial Input |
+
+## 📦 Project Structure
+
