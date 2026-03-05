@@ -1,69 +1,156 @@
-# STM32 FreeRTOS Traffic Light Controller
+# FreeRTOS Traffic Light Controller — STM32F103
 
-A multitasking traffic light control system implemented on an STM32F103 microcontroller using FreeRTOS kernel. The system is fully simulated in Proteus 8 Professional for real-time testing and validation.
+A multitasking traffic light control system built on STM32F103 
+microcontroller using FreeRTOS real-time operating system, 
+simulated in Proteus 8 Professional.
 
-## 📋 Overview
+---
 
-This project demonstrates advanced embedded systems concepts including real-time multitasking, inter-task communication, GPIO control, and UART debugging on a microcontroller. The traffic light follows a standard cycle: RED → YELLOW → GREEN → YELLOW → RED.
+## Demo
 
-### Key Features
+![Circuit](Images/circuit.png)
+![Simulation](Images/simulation.png)
 
-- **Multitasking Architecture**: Three independent FreeRTOS tasks for concurrent execution
-- **Safe Inter-task Communication**: FreeRTOS message queues for reliable state transitions
-- **Real-time LED Control**: GPIO-based light control with immediate response to state changes
-- **UART Monitoring**: Real-time status output for debugging and system observation
-- **Priority-based Scheduling**: Configured task priorities for deterministic behavior
-- **Hardware Simulation**: Complete Proteus 8 Professional simulation environment
+---
 
-## 🔧 System Architecture
+## Project Overview
 
-### Task Structure
+This project demonstrates core FreeRTOS concepts including:
+- Multitasking with priority based scheduling
+- Inter-task communication using message queues
+- GPIO control for LED output
+- UART transmission for real time monitoring
 
-#### 1. **Controller Task** (Highest Priority)
-- Manages state machine logic
-- Implements RED → YELLOW → GREEN → YELLOW cycle
-- Sends state transitions via message queue to LED Task
-- Timing control for each traffic light phase
+---
 
-#### 2. **LED Task** (Medium Priority)
-- Receives state commands from Controller Task via queue
-- Updates GPIO pins to control physical LEDs
-- Ensures immediate visual feedback on state changes
-- Prevents race conditions through queue-based communication
+## System Architecture
+```
+Controller Task (High Priority)
+        │
+        ├──► lightQueue ──► LED Task (Normal Priority)
+        │                   Controls PA0, PA1, PA2 GPIO pins
+        │
+        └──► monitorQueue ──► Monitor Task (Low Priority)
+                              Sends UART status messages
+```
 
-#### 3. **Monitor Task** (Lower Priority)
-- Receives state updates from Controller Task
-- Outputs current state via UART for real-time monitoring
-- Provides debugging information and system status
-- Non-blocking UART communication
+### Task Details
 
-### IPC
-Tasks communicate through FreeRTOS message queues, ensuring:
-- Thread-safe data passing
-- No race conditions
-- Deterministic scheduling
-- Easy debugging and testing
+| Task | Priority | Function |
+|------|----------|----------|
+| ControllerTask | High | Manages RED→YELLOW→GREEN→YELLOW cycle |
+| LEDTask | Normal | Controls GPIO pins for LED output |
+| MonitorTask | Low | Sends light status over UART |
 
-## 🛠️ Hardware & Tools
+---
 
-### Microcontroller
-- **MCU**: STM32F103C6 (ARM Cortex-M3)
-- **Memory**: 32KB Flash, 10KB SRAM
-- **Peripherals**: GPIO, UART, SysTick Timer
+## Traffic Light Timing
 
-### Development Tools
-- **IDE**: STM32CubeIDE
-- **HAL Library**: STM32F1 HAL
-- **RTOS**: FreeRTOS
-- **Simulator**: Proteus 8 Professional
+| State | Duration |
+|-------|----------|
+| RED | 10 seconds |
+| YELLOW | 3 seconds |
+| GREEN | 10 seconds |
+| YELLOW | 3 seconds |
 
-### GPIO Configuration
-| Component | GPIO Pin | Function |
-|-----------|----------|----------|
-| Red LED | PA0 | Digital Output |
-| Yellow LED | PA1 | Digital Output |
-| Green LED | PA2 | Digital Output |
-| UART TX | PA9 | Serial Output (9600 baud) |
-| UART RX | PA10 | Serial Input |
+---
 
+## Hardware
 
+| Component | Value |
+|-----------|-------|
+| Microcontroller | STM32F103C6T6 |
+| LED Resistors | 220 ohm |
+| Supply Voltage | 3.3V |
+| UART Baud Rate | 115200 |
+
+### Pin Connections
+
+| STM32 Pin | Component |
+|-----------|-----------|
+| PA0 | RED LED |
+| PA1 | YELLOW LED |
+| PA2 | GREEN LED |
+| PA9 | UART TX → Virtual Terminal |
+
+---
+
+## Software Stack
+
+| Tool | Version |
+|------|---------|
+| STM32CubeIDE | 1.13.2 |
+| FreeRTOS | CMSIS_V2 |
+| HAL Library | STM32F1xx |
+| Proteus | 8 Professional |
+
+---
+
+## FreeRTOS Concepts Demonstrated
+
+**Message Queues**
+Two separate queues used for inter-task communication:
+- `lightQueue` — carries state to LED Task
+- `monitorQueue` — carries state to Monitor Task
+
+This ensures each task independently receives state 
+changes without shared variables or race conditions.
+
+**Priority Scheduling**
+Controller runs at highest priority ensuring precise 
+timing. LED Task at normal priority for responsive 
+GPIO control. Monitor Task at lowest priority for 
+background UART logging.
+
+**Task States**
+Tasks block on queue receive using osWaitForever — 
+consuming zero CPU while waiting. Instantly wake 
+when data arrives.
+
+---
+
+## UART Output
+
+Virtual Terminal shows real time light status:
+```
+LIGHT: RED is ON
+LIGHT: YELLOW is ON
+LIGHT: GREEN is ON
+LIGHT: YELLOW is ON
+LIGHT: RED is ON
+```
+
+---
+
+## What I Learned
+
+- FreeRTOS task creation and lifecycle management
+- Inter-task communication using queues
+- Priority based preemptive scheduling
+- STM32 GPIO and UART peripheral configuration
+- Difference between mutex, semaphore and queue
+- Priority inversion and deadlock concepts
+- Embedded system simulation in Proteus
+
+---
+
+## How to Run
+
+### Proteus Simulation
+1. Open `Proteus/traffic_signal.pdsprj`
+2. Load hex file from `Debug/` folder into STM32
+3. Set crystal frequency to 8MHz
+4. Click Play
+
+### Build from Source
+1. Open project in STM32CubeIDE 1.13.2
+2. Project → Build All
+3. Hex file generated in `Debug/` folder
+
+---
+
+## Author
+
+**Your Name**
+Embedded Systems Learner
+[LinkedIn](your-linkedin-url) | [GitHub](your-github-url)
